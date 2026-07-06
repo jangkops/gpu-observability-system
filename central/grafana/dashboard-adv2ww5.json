@@ -40,17 +40,15 @@
               },
               {
                 "color": "yellow",
-                "value": 75
+                "value": 192
               },
               {
                 "color": "red",
-                "value": 90
+                "value": 230
               }
             ]
           },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
+          "unit": "short"
         },
         "overrides": [
           {
@@ -62,6 +60,25 @@
               {
                 "id": "displayName",
                 "value": "Used"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Total"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
               }
             ]
           }
@@ -102,8 +119,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum(rate(node_cpu_seconds_total{instance=\"$instance\", mode!=\"idle\"}[1m])) / count(node_cpu_seconds_total{instance=\"$instance\", mode=\"idle\"}) * 100",
+          "expr": "sum(rate(node_cpu_seconds_total{instance=\"$instance\", mode!=\"idle\"}[1m]))",
           "refId": "A"
+        },
+        {
+          "expr": "count(node_cpu_seconds_total{instance=\"$instance\", mode=\"idle\"}) by (instance)",
+          "refId": "B"
         }
       ],
       "title": "CPU 사용량 (시스템 전체)",
@@ -127,17 +148,15 @@
               },
               {
                 "color": "yellow",
-                "value": 75
+                "value": 811507227033
               },
               {
                 "color": "red",
-                "value": 90
+                "value": 973808672440
               }
             ]
           },
-          "unit": "percent",
-          "min": 0,
-          "max": 100
+          "unit": "bytes"
         },
         "overrides": [
           {
@@ -149,6 +168,25 @@
               {
                 "id": "displayName",
                 "value": "Used"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Total"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
               }
             ]
           }
@@ -189,9 +227,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "(node_memory_MemTotal_bytes{instance=\"$instance\"} - node_memory_MemAvailable_bytes{instance=\"$instance\"}) / node_memory_MemTotal_bytes{instance=\"$instance\"} * 100",
+          "expr": "node_memory_MemTotal_bytes{instance=\"$instance\"} - node_memory_MemAvailable_bytes{instance=\"$instance\"}",
           "legendFormat": "Used",
           "refId": "A"
+        },
+        {
+          "expr": "node_memory_MemTotal_bytes{instance=\"$instance\"}",
+          "refId": "B"
         }
       ],
       "title": "MEMORY 사용량 (시스템 전체)",
@@ -686,7 +728,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum by (username) (rate(namedprocess_namegroup_cpu_seconds_total{instance=\"$instance\", username=~\"aychoi|jykim|shlee|enhuh|hermee|srpark|bskim|hslee|hklee|ymbaek|hblee|shlee2|ybkim|jykim2|jwlee|yjgo|ckkang|sbkim|cgjang|yokim|syseo|sjchoe\"}[1m]))",
+          "expr": "sum by (username) (rate(namedprocess_namegroup_cpu_seconds_total{instance=\"$instance\", username=~\"aychoi|jykim|shlee|enhuh|hermee|srpark|bskim|hslee|hklee|ymbaek|hblee|shlee2|ybkim|jykim2|jwlee|yjgo|ckkang|sbkim|cgjang|yokim|syseo|sjchoe|wjchang|eykim\"}[1m]))",
           "legendFormat": "{{username}}",
           "refId": "A"
         }
@@ -712,7 +754,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
-      "description": "",
+      "description": "디스크에 실제로 쓴 용량입니다(FSx가 자동 압축해서 저장). 아래 '폴더별·사용자별' 표는 압축 전 원본 크기라, 다 더하면 이 값보다 큽니다 — 압축 때문이며 정상입니다.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -731,10 +773,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 11,
+        "h": 8,
+        "w": 12,
         "x": 0,
-        "y": 25
+        "y": 28
       },
       "id": 8,
       "options": {
@@ -791,7 +833,7 @@
           "refId": "B"
         }
       ],
-      "title": "FSx 전체 사용량 (Total: 15.2 TiB)",
+      "title": "FSx 디스크 사용량 (실제 디스크 기준)",
       "type": "piechart"
     },
     {
@@ -799,6 +841,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "수집 범위: /fsx/home 폴더만. 폴더 위치(디렉토리) 기준 원본 크기(압축 전). 위 '소유권 기준' 표는 전체 /fsx·소유자 기준이라 값이 조금 다를 수 있습니다 (같은 사람도 /home 밖에 파일이 있거나, /home 안에 남의 파일이 있을 수 있어서).",
       "fieldConfig": {
         "defaults": {
           "mappings": [],
@@ -825,10 +868,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 18,
-        "w": 13,
-        "x": 11,
-        "y": 25
+        "h": 16,
+        "w": 24,
+        "x": 0,
+        "y": 50
       },
       "id": 103,
       "options": {
@@ -873,7 +916,7 @@
           "refId": "A"
         }
       ],
-      "title": "FSx /home 사용자별 사용량",
+      "title": "FSx /home 폴더 — 사용자별 상세 (폴더 위치 기준)",
       "transformations": [
         {
           "id": "sortBy",
@@ -891,15 +934,17 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "수집 범위: /fsx 전체(home+s3+tmp 등 모든 경로). 파일 소유자(uid) 기준 합산, 원본 크기(압축 전). 아래 'FSx /home 폴더' 표는 /home만·폴더 위치 기준이라 기준·범위가 달라 값이 다를 수 있습니다. 경로별 합과도 기준 차이(소유권 vs 위치)로 약간 다를 수 있음.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
           "mappings": [],
-          "min": 100000000000,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -908,8 +953,12 @@
                 "value": 0
               },
               {
+                "color": "yellow",
+                "value": 536870912000
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 2199023255552
               }
             ]
           },
@@ -918,12 +967,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
-        "w": 11,
+        "h": 14,
+        "w": 24,
         "x": 0,
-        "y": 34
+        "y": 36
       },
-      "id": 10,
+      "id": 104,
       "options": {
         "displayMode": "gradient",
         "legend": {
@@ -933,9 +982,9 @@
           "showLegend": false
         },
         "maxVizHeight": 300,
-        "minVizHeight": 10,
+        "minVizHeight": 16,
         "minVizWidth": 0,
-        "namePlacement": "auto",
+        "namePlacement": "left",
         "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
@@ -946,6 +995,10 @@
         },
         "showUnfilled": true,
         "sizing": "auto",
+        "text": {
+          "titleSize": 11,
+          "valueSize": 14
+        },
         "valueMode": "color"
       },
       "pluginVersion": "12.3.2",
@@ -955,50 +1008,1115 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "fsx_s3_directory_bytes{directory=\"project\"}",
-          "legendFormat": "project",
+          "editorMode": "code",
+          "expr": "sort_desc(fsx_user_quota_bytes)",
+          "legendFormat": "{{username}}",
+          "range": true,
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "expr": "fsx_s3_directory_bytes{directory=\"public_data\"}",
-          "legendFormat": "public_data",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "expr": "fsx_s3_directory_bytes{directory=\"docker\"}",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "docker",
-          "range": true,
-          "refId": "C"
         }
       ],
-      "title": "FSx /s3 사용량",
+      "title": "FSx 사용자별 데이터 크기 (소유권 기준 · 전체 /fsx)",
       "transformations": [
         {
           "id": "sortBy",
           "options": {
+            "fields": {},
             "sort": [
               {
-                "desc": true,
-                "field": "Value"
+                "desc": true
               }
             ]
           }
         }
       ],
       "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "경로별 논리 용량(압축 전, project quota 기반이라 du 없이 실시간·정확). home=홈 합(proj 3001~3023), s3=docker/project/public_data+task(proj 1001~1003,5001+), tmp=미태깅 영역(proj 0). 검증: /shared 비어있고 비-tmp 오염은 StorageLens 1.46MiB(0.0001%)뿐이라 tmp 바는 사실상 순수 /tmp(파일 110만개). 3경로 합은 위 디스크 사용량(압축 후 물리)보다 압축률(~20%)만큼 큼(정상).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [],
+          "min": 0,
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "id": 108,
+      "options": {
+        "displayMode": "gradient",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "left",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "sizing": "auto",
+        "text": {
+          "titleSize": 13,
+          "valueSize": 16
+        },
+        "valueMode": "color"
+      },
+      "pluginVersion": "12.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "fsx_path_bytes",
+          "legendFormat": "{{path}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "FSx 경로별 용량 (home / s3 / tmp · 실시간)",
+      "transformations": [
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true
+              }
+            ]
+          }
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 109,
+      "options": {
+        "content": "**이 표 보는 법**\n\n- **디스크 사용량**: 디스크에 실제로 쓴 용량(압축 후). \"디스크가 얼마나 찼나\"를 봅니다.\n- **폴더별 / 사용자별**: 압축 전 원본 크기. \"어디에 / 누가\" 데이터를 갖고 있나를 봅니다.\n- **폴더별 합과 사용자별 합은 약간 다를 수 있습니다** — 기준이 달라서입니다(폴더=위치 기준 / 사용자=소유권 기준).\n- 이 합이 위 **디스크 사용량보다 커도 정상**입니다 — FSx가 압축해 저장하기 때문(보통 약 20% 절약).\n- 모두 **30초마다 갱신되는 현재 저장량**입니다(지금 누가 읽고 쓰는 '활동량'이 아니라, 쌓여 있는 '보관량').",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.3.2",
+      "title": "FSx 사용량 — 읽는 법",
+      "transparent": false,
+      "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 67
+      },
+      "id": 9000,
+      "title": "S3 프로젝트 디렉토리 모니터링",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "비현재 = 파일을 덮어쓰거나 삭제할 때 남는 '이전 버전'들의 누적(버전관리 기능). 저렴한 GLACIER_IR에 보관되다 90일 후 자동 만료됨. ※Intelligent-Tiering(IT) 설정은 '현재 버전' 비용최적화라 이 값과 무관하며, 활발히 덮어쓰는 프로젝트는 비현재가 현재보다 클 수 있음(정상). 줄이려면 비현재 만료기간 단축.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50000000000000
+              },
+              {
+                "color": "red",
+                "value": 150000000000000
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 68
+      },
+      "id": 9002,
+      "options": {
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(s3_rt_project_bytes{scope=\"noncurrent\",project!=\"__nonproject__\"})",
+          "instant": false,
+          "refId": "A"
+        }
+      ],
+      "title": "비현재 총용량 [1분 간격]",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "project/ 경로 밖(task-*, public_data, docker 등) 용량. 연구 프로젝트로 분류되지 않은 부분(소유자 미지정).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2000000000000
+              },
+              {
+                "color": "red",
+                "value": 10000000000000
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 68
+      },
+      "id": 9003,
+      "options": {
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(s3_rt_project_bytes{project=\"__nonproject__\"})",
+          "instant": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Unmapped(project/ 밖) [1분 간격]",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "최근 1시간 동안의 현재용량 증가분. 급증 시 폭주 의심. (값은 약 1분마다 재계산)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1000000000000
+              },
+              {
+                "color": "red",
+                "value": 5000000000000
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 72
+      },
+      "id": 9005,
+      "options": {
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(s3_rt_project_bytes{scope=\"current\"}) - sum(s3_rt_project_bytes{scope=\"current\"} offset 1h)",
+          "instant": false,
+          "refId": "A"
+        }
+      ],
+      "title": "최근 1시간 증가량 [1분 간격]",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "최근 24시간 동안의 현재용량 증가분. (값은 약 1분마다 재계산)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5000000000000
+              },
+              {
+                "color": "red",
+                "value": 20000000000000
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 72
+      },
+      "id": 9006,
+      "options": {
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(s3_rt_project_bytes{scope=\"current\"}) - sum(s3_rt_project_bytes{scope=\"current\"} offset 24h)",
+          "instant": false,
+          "refId": "A"
+        }
+      ],
+      "title": "최근 24시간 증가량 [1분 간격]",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "현재(최신) 버전 = 지금 유효한(사용자가 실제로 보는) 데이터 용량. project/ 기준(Unmapped 제외). 파일 추가·삭제가 약 1~2분 내 반영.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 0,
+        "y": 68
+      },
+      "id": 9007,
+      "options": {
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(s3_rt_project_bytes{scope=\"current\",project!=\"__nonproject__\"})",
+          "instant": false,
+          "refId": "A"
+        }
+      ],
+      "title": "현재 총용량 [1분 간격]",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "일배치 인벤토리 캐시가 마지막 생성 이후 경과한 시간(실시간 갱신). 매일 05:30 KST collector 성공 시 0으로 리셋. 값이 계속 커지면 배치 실패 신호.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 129600
+              },
+              {
+                "color": "red",
+                "value": 216000
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 72
+      },
+      "id": 9008,
+      "options": {
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "max(s3_metrics_cache_age_seconds)",
+          "instant": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Inventory 캐시 신선도 (05:30 KST 갱신 감시 · 실시간)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "시간대별 용량 증감 움직임(+업로드/−삭제). 위 '최근 1시간/24시간 증가량'이 '얼마나'를 알려준다면, 이 그래프는 '언제' 변동이 있었는지(스파이크 시점)를 보여줍니다. 5분 단위 집계, Y축 자동 스케일.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 76
+      },
+      "id": 9009,
+      "options": {},
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(s3_rt_project_bytes{scope=\"current\"}) - sum(s3_rt_project_bytes{scope=\"current\"} offset 5m)",
+          "instant": false,
+          "legendFormat": "용량 증감(5분 단위, +업로드/−삭제)",
+          "refId": "A"
+        }
+      ],
+      "title": "시간대별 용량 증감 [1분 간격]",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "일배치 인벤토리 기준 일별 총용량(현재버전) 추이. 매일 05:30 갱신되어 하루 1점씩 누적되며, 7일치가 쌓이면 주간 증가 추세를 보여줍니다. 용량 계획용.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "axisSoftMax": 377132488327168,
+            "axisSoftMin": 374933465071616
+          },
+          "decimals": 2,
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 76
+      },
+      "id": 9016,
+      "options": {},
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(s3_project_bytes{scope=\"current\"})",
+          "instant": false,
+          "legendFormat": "총용량",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": "7d",
+      "title": "최근 7일 일별 총용량 추이 [매일 05:30 KST]",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "프로젝트 폴더별 현재 용량 상위 10. 막대를 클릭하면 아래 트리 섹션이 해당 프로젝트로 펼쳐집니다.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "${__field.labels.project} 드릴다운",
+              "url": "/d/adv2ww5?var-project=${__field.labels.project}&var-owner=All&${__url_time_range}"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5000000000000
+              },
+              {
+                "color": "red",
+                "value": 30000000000000
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 0,
+        "y": 83
+      },
+      "id": 9010,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sort_desc(topk(10, sum by(project)(s3_rt_project_bytes{scope=\"current\",project!=\"__nonproject__\"})))",
+          "instant": true,
+          "legendFormat": "{{project}}",
+          "refId": "A"
+        }
+      ],
+      "title": "프로젝트별 현재 용량 Top10 [1분 간격]",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "데이터 오너별 현재 용량 상위 10. 막대 클릭 시 아래 Owner 드릴다운이 펼쳐짐.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "${__field.labels.owner} 드릴다운",
+              "url": "/d/adv2ww5?var-owner=${__field.labels.owner}&var-project=All&${__url_time_range}"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5000000000000
+              },
+              {
+                "color": "red",
+                "value": 30000000000000
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 12,
+        "x": 12,
+        "y": 83
+      },
+      "id": 9012,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sort_desc(topk(10, sum by(owner)(s3_subproject_bytes{scope=\"current\"})))",
+          "instant": true,
+          "legendFormat": "{{owner}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Owner별 현재 용량 Top10 [매일 05:30 KST]",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "최근 1시간 증가 상위 10. 폭주 업로드 신호.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1000000000000
+              },
+              {
+                "color": "red",
+                "value": 5000000000000
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 95
+      },
+      "id": 9013,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sort_desc(topk(10, sum by(project)(s3_rt_project_bytes{scope=\"current\"}) - (sum by(project)(s3_rt_project_bytes{scope=\"current\"} offset 1h) or sum by(project)(s3_rt_project_bytes{scope=\"current\"}) * 0)))",
+          "instant": true,
+          "legendFormat": "{{project}}",
+          "refId": "A"
+        }
+      ],
+      "title": "최근 1시간 증가 Top10 (폭주 탐지) [1분 간격]",
+      "type": "bargauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 106
+      },
+      "id": 9030,
+      "title": "프로젝트 드릴다운: $project",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": "60",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "현재 선택: $project — 위 Top10에서 막대 클릭하거나 상단 드롭다운에서 프로젝트를 선택하면 여기에 표시됩니다.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "위 Top10에서 프로젝트를 클릭하거나 드롭다운에서 선택하세요",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1000000000000
+              },
+              {
+                "color": "red",
+                "value": 10000000000000
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 12,
+        "x": 0,
+        "y": 107
+      },
+      "id": 9014,
+      "interval": "10s",
+      "maxDataPoints": 100,
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sort_desc(topk(15, sum by(sub)(s3_subproject_bytes{project=~\"$project\",scope=\"current\"})))",
+          "instant": true,
+          "legendFormat": "{{sub}}",
+          "refId": "A"
+        }
+      ],
+      "title": "[$project] 하위폴더별 용량 [매일 05:30 KST]",
+      "transformations": [],
+      "type": "bargauge"
+    },
+    {
+      "cacheTimeout": "60",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "S3 Inventory 일배치(매일 05:30 KST) 기반. 폴더 클릭→하위, [⬆ 상위 폴더로]→부모 (페이지 새로고침 없음). 상단 프로젝트/Owner 연동.",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 12,
+        "x": 12,
+        "y": 107
+      },
+      "id": 9015,
+      "interval": "10s",
+      "maxDataPoints": 100,
+      "options": {
+        "afterRender": "\nconst root = context.element.querySelector('.s3drill-root') || context.element;\nconst rv = context.grafana.replaceVariables;\nconst project = rv('${project}');\nconst owner = rv('${owner}');\n\nif (!window.__s3drill) window.__s3drill = {};\nconst S = window.__s3drill;\n\nfunction isAll(v){ return !v || v==='All' || v==='$__all' || v==='.*' || v.indexOf('{')>=0 || v.indexOf('|')>=0; }\nconst projClean = isAll(project) ? '' : project;\nif (S.lastProject !== project) { S.path = projClean; S.lastProject = project; }\nif (S.path === undefined) S.path = projClean;\n\nfunction fmt(b){ if(b==null)return '-'; if(b>=1099511627776)return (b/1099511627776).toFixed(1)+' TiB'; if(b>=1073741824)return (b/1073741824).toFixed(1)+' GiB'; if(b>=1048576)return (b/1048576).toFixed(1)+' MiB'; if(b>=1024)return (b/1024).toFixed(0)+' KiB'; return b+' B';}\nfunction fmtN(n){ if(n==null)return '-'; if(n>=1e6)return (n/1e6).toFixed(1)+'M'; if(n>=1e3)return (n/1e3).toFixed(1)+'K'; return ''+n;}\n\nfunction render(data){\n  let h='<div style=\"font-family:sans-serif;font-size:13px;color:#e5e7eb\">';\n  h+='<div style=\"padding:6px 4px;color:#9ca3af;font-size:12px\">\\u{1F4C2} '+(S.path||'(전체 프로젝트)')+'</div>';\n  h+='<table style=\"width:100%;border-collapse:collapse\"><thead><tr style=\"text-align:left;color:#9ca3af;border-bottom:1px solid #374151\">';\n  h+='<th style=\"padding:5px 8px\">폴더</th><th style=\"padding:5px 8px\">소유자</th><th style=\"padding:5px 8px;text-align:right\">용량</th><th style=\"padding:5px 8px;text-align:right\">파일수</th></tr></thead><tbody>';\n  if (S.path){\n    h+='<tr data-up=\"1\" style=\"cursor:pointer;color:#60a5fa\"><td style=\"padding:5px 8px\">\\u2B06 .. (상위 폴더로)</td><td></td><td style=\"text-align:right\">-</td><td style=\"text-align:right\">-</td></tr>';\n  }\n  for (const it of data){\n    if (it.name && it.name.indexOf('상위 폴더')>=0) continue;\n    h+='<tr data-fp=\"'+encodeURIComponent(it.fullpath||'')+'\" style=\"cursor:pointer;border-bottom:1px solid #1f2937\">';\n    h+='<td style=\"padding:5px 8px;color:#f3f4f6\">\\u{1F4C1} '+it.name+'</td>';\n    h+='<td style=\"padding:5px 8px;color:#cbd5e1\">'+(it.owner||'')+'</td>';\n    h+='<td style=\"padding:5px 8px;text-align:right\">'+fmt(it.bytes)+'</td>';\n    h+='<td style=\"padding:5px 8px;text-align:right;color:#cbd5e1\">'+fmtN(it.objects)+'</td></tr>';\n  }\n  h+='</tbody></table></div>';\n  root.innerHTML=h;\n  root.querySelectorAll('tr[data-fp]').forEach(function(tr){\n    tr.addEventListener('click',function(){ S.path=decodeURIComponent(tr.getAttribute('data-fp')); load(); });\n    tr.addEventListener('mouseover',function(){ tr.style.background='#1f2937'; });\n    tr.addEventListener('mouseout',function(){ tr.style.background=''; });\n  });\n  const up=root.querySelector('tr[data-up]');\n  if(up){\n    up.addEventListener('click',function(){ const p=(S.path||'').split('/'); p.pop(); S.path=p.join('/'); load(); });\n    up.addEventListener('mouseover',function(){ up.style.background='#1f2937'; });\n    up.addEventListener('mouseout',function(){ up.style.background=''; });\n  }\n}\n\nfunction load(){\n  root.innerHTML='<div style=\"padding:12px;color:#9ca3af\">로딩중...</div>';\n  const url='/api/datasources/proxy/uid/afqyi1v4btypsf/api/tree?project='+encodeURIComponent(project)+'&subpath='+encodeURIComponent(S.path||'')+'&owner='+encodeURIComponent(owner);\n  fetch(url,{credentials:'include'}).then(function(r){return r.json();}).then(function(d){ render(Array.isArray(d)?d:[]); }).catch(function(e){ root.innerHTML='<div style=\"color:#f87171;padding:12px\">오류: '+e.message+'</div>'; });\n}\nload();\n",
+        "content": "<div class=\"s3drill-root\"></div>",
+        "defaultContent": "<div class=\"s3drill-root\"></div>",
+        "editor": {
+          "format": "html",
+          "language": "html"
+        },
+        "editors": [],
+        "helpers": "",
+        "renderMode": "allRows",
+        "styles": "",
+        "wrap": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "vector(1)",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "[$project] 하위폴더·소유자·용량 [매일 05:30 KST · 클릭 탐색]",
+      "transformations": [],
+      "type": "marcusolsson-dynamictext-panel"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 118
+      },
+      "id": 9020,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "모든 프로젝트 현재 용량(내림차순, 스크롤).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 5000000000000
+                  },
+                  {
+                    "color": "red",
+                    "value": 30000000000000
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 16,
+            "w": 12,
+            "x": 0,
+            "y": 132
+          },
+          "id": 9021,
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "sum by(project)(s3_rt_project_bytes{scope=\"current\",project!=\"__nonproject__\"})",
+              "format": "table",
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "전체 프로젝트 현재 용량 [1분 간격]",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "renameByName": {
+                  "Value": "용량"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": "",
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "용량"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "모든 오너 현재 용량(내림차순, 스크롤).",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
+              },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 5000000000000
+                  },
+                  {
+                    "color": "red",
+                    "value": 30000000000000
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 16,
+            "w": 12,
+            "x": 12,
+            "y": 132
+          },
+          "id": 9022,
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "expr": "sum by(owner)(s3_subproject_bytes{scope=\"current\"})",
+              "format": "table",
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "title": "전체 Owner 현재 용량 [매일 05:30 KST]",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "renameByName": {
+                  "Value": "용량"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": "",
+                "sort": [
+                  {
+                    "desc": true,
+                    "field": "용량"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "전체 상세 (모든 프로젝트 · 모든 Owner)",
+      "type": "row"
     }
   ],
   "preload": false,
@@ -1051,6 +2169,67 @@
         ],
         "query": "p4d,p4de,p5,g5,r7,head,dgx",
         "type": "custom"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "description": "선택하면 아래 프로젝트 트리 드릴다운 섹션에 상세 표시 (스크롤 ↓)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "📂 S3 프로젝트",
+        "multi": false,
+        "name": "project",
+        "query": "label_values(s3_project_bytes{scope=\"current\"}, project)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 3,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "description": "보통은 비워두세요. 상단 프로젝트 선택으로 자동 설정됩니다. 폴더 클릭 시 갱신.",
+        "hide": 0,
+        "label": "📂 탐색 경로 (더 깊이 볼 때만)",
+        "name": "subpath",
+        "query": "",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "description": "선택하면 아래 Owner 드릴다운 섹션에 상세 표시 (스크롤 ↓)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "👤 Owner",
+        "multi": false,
+        "name": "owner",
+        "query": "label_values(s3_subproject_bytes{scope=\"current\",owner!=\"unmapped\"}, owner)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
       }
     ]
   },
@@ -1079,6 +2258,6 @@
   "timezone": "browser",
   "title": "목암생명과학연구소 사용자 모니터링 대시보드 v1",
   "uid": "adv2ww5",
-  "version": 157,
+  "version": 255,
   "weekStart": ""
 }

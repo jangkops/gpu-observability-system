@@ -135,6 +135,8 @@ scrape_configs:
     target_label: username
     action: replace
 - job_name: p4de-process
+  scrape_interval: 30s
+  scrape_timeout: 25s
   static_configs:
   - targets:
     - 10.0.1.196:9256
@@ -196,7 +198,7 @@ scrape_configs:
     target_label: username
     action: replace
 - job_name: fsx-exporter
-  scrape_interval: 5m
+  scrape_interval: 30s
   static_configs:
   - targets:
     - fsx-exporter:9101
@@ -300,3 +302,10 @@ scrape_configs:
     replacement: $2
     target_label: username
     action: replace
+- job_name: s3-project
+  scrape_interval: 60s
+  static_configs:
+  - targets:
+    - 10.0.1.150:9104
+    labels:
+      service: s3-project
